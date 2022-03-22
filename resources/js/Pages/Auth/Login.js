@@ -31,15 +31,34 @@ export default function Login({status, canResetPassword}) {
         post(route('login'));
     };
 
-    const loginMetaMask = () => {
+    const loginMetaMask = async () => {
         setLoading(false);
 
         if (!window.ethereum) {
             alert('Metamask not exist');
-            return
+            setLoading(false);
+            return;
         }
 
         const web3 = new Web3(window.ethereum);
+
+        // Fetch nonce
+        const message = (await axios.get(route('metamask.signature'))).data;
+        // Get wallet address
+        const address = (await web3.eth.requestAccounts())[0];
+        // Sign message
+        const signature = await web3.eth.personal.sign(message, address);
+
+        try {
+            let response = await axios.post(route('metamask.authenticate'), {
+                'address': address,
+                'signature': signature,
+            });
+
+            window.location.href = route('dashboard');
+        } catch(e) {
+            alert(e.message);
+        }
 
         setLoading(true);
     }
