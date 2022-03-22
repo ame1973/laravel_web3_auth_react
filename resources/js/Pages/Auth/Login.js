@@ -1,18 +1,19 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Button from '@/Components/Button';
 import Checkbox from '@/Components/Checkbox';
 import Guest from '@/Layouts/Guest';
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
 import ValidationErrors from '@/Components/ValidationErrors';
-import { Head, Link, useForm } from '@inertiajs/inertia-react';
+import {Head, Link, useForm} from '@inertiajs/inertia-react';
 
-export default function Login({ status, canResetPassword }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+export default function Login({status, canResetPassword}) {
+    const {data, setData, post, processing, errors, reset} = useForm({
         email: '',
         password: '',
         remember: '',
     });
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -30,17 +31,30 @@ export default function Login({ status, canResetPassword }) {
         post(route('login'));
     };
 
+    const loginMetaMask = () => {
+        setLoading(false);
+
+        if (!window.ethereum) {
+            alert('Metamask not exist');
+            return
+        }
+
+        const web3 = new Web3(window.ethereum);
+
+        setLoading(true);
+    }
+
     return (
         <Guest>
-            <Head title="Log in" />
+            <Head title="Log in"/>
 
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
 
-            <ValidationErrors errors={errors} />
+            <ValidationErrors errors={errors}/>
 
             <form onSubmit={submit}>
                 <div>
-                    <Label forInput="email" value="Email" />
+                    <Label forInput="email" value="Email"/>
 
                     <Input
                         type="text"
@@ -54,7 +68,7 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <div className="mt-4">
-                    <Label forInput="password" value="Password" />
+                    <Label forInput="password" value="Password"/>
 
                     <Input
                         type="password"
@@ -68,7 +82,7 @@ export default function Login({ status, canResetPassword }) {
 
                 <div className="block mt-4">
                     <label className="flex items-center">
-                        <Checkbox name="remember" value={data.remember} handleChange={onHandleChange} />
+                        <Checkbox name="remember" value={data.remember} handleChange={onHandleChange}/>
 
                         <span className="ml-2 text-sm text-gray-600">Remember me</span>
                     </label>
@@ -89,6 +103,21 @@ export default function Login({ status, canResetPassword }) {
                     </Button>
                 </div>
             </form>
+
+            <hr className={'mt-3'}/>
+            <div className={'flex justify-center'}>
+                <button
+                    className={
+                        `inline-flex items-center px-4 py-2 bg-gray-900 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest active:bg-gray-900 transition ease-in-out duration-150 ${
+                            loading && 'opacity-25'
+                        } mt-4`
+                    }
+                    onClick={loginMetaMask}
+                    disabled={loading}
+                >
+                    Login with MetaMask
+                </button>
+            </div>
         </Guest>
     );
 }
