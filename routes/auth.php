@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\Web3AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -53,4 +54,15 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
+});
+
+
+Route::middleware('guest')->prefix('metamask')->group(function () {
+
+    Route::get('/ethereum/signature', [Web3AuthController::class, 'signature'])
+        ->name('metamask.signature')
+        ->middleware('guest');
+
+    Route::post('/ethereum/authenticate', [Web3AuthController::class, 'authenticate'])
+        ->middleware('guest')->name('metamask.authenticate');
 });
