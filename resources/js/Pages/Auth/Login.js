@@ -32,11 +32,11 @@ export default function Login({status, canResetPassword}) {
     };
 
     const loginMetaMask = async () => {
-        setLoading(false);
+        setLoading(true);
 
         if (!window.ethereum) {
             alert('Metamask not exist');
-            setLoading(false);
+            setLoading(true);
             return;
         }
 
@@ -60,7 +60,7 @@ export default function Login({status, canResetPassword}) {
             alert(e.message);
         }
 
-        setLoading(true);
+        setLoading(false);
     }
 
     return (
